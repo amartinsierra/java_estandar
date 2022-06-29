@@ -77,7 +77,7 @@ public class NotasService {
 			
 			return bf.lines() //Stream<String>
 					.map(n->Double.parseDouble(n)) //Stream<Double>
-					.toArray(n->new Double[0]);
+					.toArray(n->new Double[n]);
 			
 		}
 		catch(IOException ex) {		
@@ -91,14 +91,18 @@ public class NotasService {
 		notas.replaceAll(n->n+incremento);
 		guardarNotas(notas);
 	}
-	/*public void eliminarSuspensos() {
+	public void eliminarSuspensos() {
+		ArrayList<Double> notas=obtenerNotas();
 		notas.removeIf(n->n<5);
+		guardarNotas(notas);
 	}
 	public void ordenarNotas() {
+		ArrayList<Double> notas=obtenerNotas();
 		//usando el método sort de las listas, NO el de Collections
 		//notas.sort((a,b)->a>b?1:-1);
 		notas.sort((a,b)->a.compareTo(b));
-	}*/
+		guardarNotas(notas);
+	}
 	
 	public ArrayList<Double> obtenerNotas(){
 		try(FileReader fr=new FileReader(ruta);
