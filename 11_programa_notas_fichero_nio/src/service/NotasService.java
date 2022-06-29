@@ -18,21 +18,24 @@ public class NotasService {
 	Path path;
 	public NotasService() {
 		path=Path.of(ruta);
+		try {
+			Files.createFile(path);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
 	}
 	
 	//métodos de la clase
 	public void guardarNota(double nota) {					
 		try {
-			Files.writeString(path, String.valueOf(nota), StandardOpenOption.APPEND);
+			Files.writeString(path, String.valueOf(nota)+"\n",StandardOpenOption.APPEND);
 		}
 		catch(IOException ex) {
+			
 			ex.printStackTrace();
-		}
-		
-		
-	}
-	
-	
+		}	
+	}	
 	public OptionalDouble media() {
 		try {
 			return Files.lines(path)
@@ -46,10 +49,9 @@ public class NotasService {
 	}
 	//***
 	public int aprobados() {
-		try(FileReader fr=new FileReader(ruta);
-				BufferedReader bf=new BufferedReader(fr)){		
+		try{		
 			//con programación funcional
-			return (int) bf.lines()
+			return (int) Files.lines(path)
 			.mapToDouble(n->Double.parseDouble(n))
 			.filter(n->n>=5)
 			.count();
@@ -62,18 +64,8 @@ public class NotasService {
 	}
 	
 	public Double[] devolverNotas() {
-		/*double[] valores=new double[notas.size()];
-		for(int i=0;i<notas.size();i++) {
-			valores[i]=notas.get(i);
-		}*/
-		try(FileReader fr=new FileReader(ruta);
-				BufferedReader bf=new BufferedReader(fr)){		
-			//con programación funcional
-			/*return bf.lines()
-			.mapToDouble(n->Double.parseDouble(n)) //DoubleStream
-			.toArray(); //double[]*/
-			
-			return bf.lines() //Stream<String>
+		try{		
+			return Files.lines(path) //Stream<String>
 					.map(n->Double.parseDouble(n)) //Stream<Double>
 					.toArray(n->new Double[n]);
 			
@@ -103,10 +95,9 @@ public class NotasService {
 	}
 	
 	public ArrayList<Double> obtenerNotas(){
-		try(FileReader fr=new FileReader(ruta);
-				BufferedReader bf=new BufferedReader(fr)){		
+		try{		
 			//con programación funcional
-			return new ArrayList<Double>(bf.lines()
+			return new ArrayList<Double>(Files.lines(path)
 					.map(n->Double.parseDouble(n)) //Stream<Double>
 					.collect(Collectors.toList()));		
 		}
@@ -117,20 +108,21 @@ public class NotasService {
 	}
 	
 	public void guardarNotas(ArrayList<Double> notas) {
-		try (PrintStream out=new PrintStream(ruta);){			
-			notas.forEach(n->out.println(n));
+		try {			
+			Files.write(path, notas.stream()
+					.map(n->String.valueOf(n))
+					.collect(Collectors.toList()));
 		}
-		catch(FileNotFoundException ex) {
+		catch(IOException ex) {
 			ex.printStackTrace();
 		}
 	}
 	
 	//***
 	public OptionalDouble notaMayor() {
-		try(FileReader fr=new FileReader(ruta);
-				BufferedReader bf=new BufferedReader(fr)){		
+		try{		
 			//con programación funcional
-			return bf.lines()
+			return Files.lines(path)
 			.mapToDouble(n->Double.parseDouble(n))
 			.max();
 			
@@ -142,10 +134,9 @@ public class NotasService {
 	}
 	//***
 	public OptionalDouble notaMenor() {
-		try(FileReader fr=new FileReader(ruta);
-				BufferedReader bf=new BufferedReader(fr)){		
+		try{		
 			//con programación funcional
-			return bf.lines()
+			return Files.lines(path)
 			.mapToDouble(n->Double.parseDouble(n))
 			.min();
 			
